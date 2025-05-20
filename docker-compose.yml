@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  bd:
+    image: mariadb
+    container_name: mariadb_iot
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_USER: "${DB_USR}"
+      MYSQL_PASSWORD: "${DB_PASS}"
+    ports:
+      - "3306:3306"
+    networks:
+      - iot_network
+
+  mqtt:
+    image: emqx/emqx:latest
+    container_name: emqx_broker
+    environment:
+      EMQX_DASHBOARD__DEFAULT_USERNAME: "${MQTT_USR}"
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: "${MQTT_PASS}"
+    ports:
+      - "1883:1883"  # MQTT
+      - "8083:8083"  # MQTT over WebSocket
+      - "8081:8081"  # Dashboard admin
+    networks:
+      - iot_network
+
+  nodered:
+    image: nodered/node-red
+    depends_on:
+      - bd
+      - mqtt
+    ports:
+      - "1880:1880"
+    networks:
+      - iot_network
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    depends_on:
+      - mqtt
+    ports:
+      - "8123:8123"
+    networks:
+      - iot_network
+
+networks:
+  iot_network:
+    driver: bridge
