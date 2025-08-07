@@ -51,13 +51,7 @@ services:
     networks:
       - iot_network
     restart: always
-
-networks:
-  iot_network:
-    driver: bridge
-
-
-
+    
   esphome:
     image: esphome/esphome
     container_name: esphome_dashboard
@@ -68,4 +62,8 @@ networks:
     networks:
       - iot_network
     restart: always
+
+networks:
+  iot_network:
+    driver: bridge
 
