@@ -1,4 +1,3 @@
-
 services:
   bd:
     image: mariadb
@@ -12,6 +11,7 @@ services:
       - "3306:3306"
     networks:
       - iot_network
+    restart: always
 
   mqtt:
     image: emqx/emqx:latest
@@ -25,6 +25,7 @@ services:
       - "8081:8081"  # Dashboard admin
     networks:
       - iot_network
+    restart: always
 
   nodered:
     image: nodered/node-red
@@ -33,8 +34,13 @@ services:
       - mqtt
     ports:
       - "1880:1880"
+    volumes:
+      - ./data/nodered:/data
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
     networks:
       - iot_network
+    restart: always
 
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:stable
@@ -44,7 +50,22 @@ services:
       - "8123:8123"
     networks:
       - iot_network
+    restart: always
 
 networks:
   iot_network:
     driver: bridge
+
+
+
+  esphome:
+    image: esphome/esphome
+    container_name: esphome_dashboard
+    ports:
+      - "6052:6052"
+    volumes:
+      - ./data/esphome:/config
+    networks:
+      - iot_network
+    restart: always
+
