@@ -36,8 +36,6 @@ services:
       - "1880:1880"
     volumes:
       - ./data/nodered:/data
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
     networks:
       - iot_network
     restart: always
